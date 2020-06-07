@@ -132,7 +132,7 @@ describe('Resource<T>', () => {
       const zeroSpy = spyOn(testObject, 'zero');
 
       // Zero case
-      const res = new Resource(0);
+      const res = new Resource<number>(0);
       res.on({empty: testObject.zero});
 
       expect(zeroSpy).not.toHaveBeenCalled();

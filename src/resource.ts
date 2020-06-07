@@ -6,11 +6,11 @@ import {catchError, concatAll, map} from 'rxjs/operators';
  * Initial loading state and possible success, failure and empty outcomes.
  */
 export class Resource<T> {
-  private get isFailure(): boolean {
+  get isFailure(): boolean {
     return !this.isLoading && this.error !== null;
   }
 
-  private get isEmpty(): boolean {
+  get isEmpty(): boolean {
     if (this.isLoading || this.isFailure) {
       return false;
     }
@@ -26,13 +26,13 @@ export class Resource<T> {
     return false;
   }
 
-  private get isSuccess(): boolean {
+  get isSuccess(): boolean {
     return !this.isLoading && !this.isFailure && !this.isEmpty;
   }
 
-  private readonly isLoading: boolean;
-  data: T;
-  error: any;
+  readonly isLoading: boolean;
+  readonly data: T;
+  readonly error: any;
 
   constructor(data: T, error: any = null, loading: boolean = false) {
     this.data = data;
@@ -44,95 +44,24 @@ export class Resource<T> {
   }
 
   /**
-   * Trigger for successful resource
-   * @param callback - callback to trigger if resource is of type success
-   */
-  private onSuccess(callback: (data: T) => void): void {
-    if (this.isSuccess) {
-      callback(this.data);
-    }
-  }
-
-  /**
-   * Trigger for failed resource
-   * @param callback - callback to trigger if resource is of type failure
-   */
-  private onFailure(callback: (error: any) => void): void {
-    if (this.isFailure) {
-      callback(this.error);
-    }
-  }
-
-  /**
-   * Trigger for empty resource
-   * @param callback - callback to trigger if resource is empty
-   */
-  private onEmpty(callback: () => void): void {
-    if (!this.isLoading && !this.isFailure && this.isEmpty) {
-      callback();
-    }
-  }
-
-  /**
-   * Trigger for loading resource
-   * @param callback - callback to trigger if resource is loading
-   */
-  private onLoading(callback: () => void): void {
-    if (!this.isFailure && this.isLoading) {
-      callback();
-    }
-  }
-
-  /**
    * Dynamically sets triggers for possible resource outcomes based on a PartialChecker structure
    * @param options - PartialChecker given for the current resource
    */
   on(options: PartialResourceCallbacks<T>): void {
+    if (options.loading && this.isLoading) {
+      options.loading();
+    }
     if (options.success && this.isSuccess) {
-      this.onSuccess(options.success);
+      options.success(this.data);
     }
-    if (options.failure) {
-      this.onFailure(options.failure);
+    if (options.failure && this.isFailure) {
+      options.failure(this.error);
     }
-    if (options.empty) {
-      this.onEmpty(options.empty);
-    }
-    if (options.loading) {
-      this.onLoading(options.loading);
+    if (options.empty && this.isEmpty) {
+      options.empty();
     }
   }
 }
-
-/** Checker interfaces */
-interface SuccessChecker<T> {
-  success: (data: T) => void;
-  failure?: (err: any) => void;
-  empty?: () => void;
-  loading?: () => void;
-}
-
-interface FailureChecker<T> {
-  success?: (data: T) => void;
-  failure: (err: any) => void;
-  empty?: () => void;
-  loading?: () => void;
-}
-
-interface EmptyChecker<T> {
-  success?: (data: T) => void;
-  failure?: (err: any) => void;
-  empty: () => void;
-  loading?: () => void;
-}
-
-interface LoadingChecker<T> {
-  success?: (data: T) => void;
-  failure?: (err: any) => void;
-  empty?: () => void;
-  loading: () => void;
-}
-
-export declare type PartialChecker<T> = SuccessChecker<T> | FailureChecker<T> | EmptyChecker<T> | LoadingChecker<T>;
 
 // https://stackoverflow.com/questions/48230773/how-to-create-a-partial-like-that-requires-a-single-property-to-be-set
 
@@ -145,24 +74,17 @@ type ResourceCallbacks<T> = {
   loading: () => void;
 }
 
-type PartialResourceCallbacks<T> = AtLeastOne<ResourceCallbacks<T>>
-
 /**
- * Main Checker interface
+ * Partial type that expects at leas one attribute from ResourceCallbacks<T>
  */
-export interface Checker<T> {
-  success: (data: T) => void;
-  failure: (err: any) => void;
-  empty: () => void;
-  loading: () => void;
-}
+type PartialResourceCallbacks<T> = AtLeastOne<ResourceCallbacks<T>>
 
 /**
  * Maps PartialChecker options to a function.
  * To be used on a subscription
  * @param options - Options to check
  */
-export function onResource<T>(options: PartialChecker<T>): ((res: Resource<T>) => void) {
+export function onResource<T>(options: PartialResourceCallbacks<T>): ((res: Resource<T>) => void) {
   return (res: Resource<T>) => res.on(options);
 }
 
