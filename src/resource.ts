@@ -1,4 +1,4 @@
-import {concat, Observable, of} from 'rxjs';
+import {Observable, of} from 'rxjs';
 import {catchError, concatAll, map} from 'rxjs/operators';
 
 /**
@@ -6,11 +6,14 @@ import {catchError, concatAll, map} from 'rxjs/operators';
  * Initial loading state and possible success, failure and empty outcomes.
  */
 export class Resource<T> {
-  private get isSuccess(): boolean {
-    return !this.isEmpty && !this.isFailure && !this.isLoading;
+  private get isFailure(): boolean {
+    return !this.isLoading && this.error !== null;
   }
 
   private get isEmpty(): boolean {
+    if (this.isLoading || this.isFailure) {
+      return false;
+    }
     if (this.data === null || this.data === undefined) {
       return true;
     }
@@ -23,8 +26,8 @@ export class Resource<T> {
     return false;
   }
 
-  private get isFailure(): boolean {
-    return this.error !== null;
+  private get isSuccess(): boolean {
+    return !this.isLoading && !this.isFailure && !this.isEmpty;
   }
 
   private readonly isLoading: boolean;
@@ -44,52 +47,48 @@ export class Resource<T> {
    * Trigger for successful resource
    * @param callback - callback to trigger if resource is of type success
    */
-  private onSuccess(callback: (data: T) => void): Resource<T> {
+  private onSuccess(callback: (data: T) => void): void {
     if (this.isSuccess) {
       callback(this.data);
     }
-    return this;
   }
 
   /**
    * Trigger for failed resource
    * @param callback - callback to trigger if resource is of type failure
    */
-  private onFailure(callback: (error: any) => void): Resource<T> {
+  private onFailure(callback: (error: any) => void): void {
     if (this.isFailure) {
       callback(this.error);
     }
-    return this;
   }
 
   /**
    * Trigger for empty resource
    * @param callback - callback to trigger if resource is empty
    */
-  private onEmpty(callback: () => void): Resource<T> {
+  private onEmpty(callback: () => void): void {
     if (!this.isLoading && !this.isFailure && this.isEmpty) {
       callback();
     }
-    return this;
   }
 
   /**
    * Trigger for loading resource
    * @param callback - callback to trigger if resource is loading
    */
-  private onLoading(callback: () => void): Resource<T> {
+  private onLoading(callback: () => void): void {
     if (!this.isFailure && this.isLoading) {
       callback();
     }
-    return this;
   }
 
   /**
    * Dynamically sets triggers for possible resource outcomes based on a PartialChecker structure
    * @param options - PartialChecker given for the current resource
    */
-  on(options: PartialChecker<T>): void {
-    if (options.success) {
+  on(options: PartialResourceCallbacks<T>): void {
+    if (options.success && this.isSuccess) {
       this.onSuccess(options.success);
     }
     if (options.failure) {
@@ -135,6 +134,19 @@ interface LoadingChecker<T> {
 
 export declare type PartialChecker<T> = SuccessChecker<T> | FailureChecker<T> | EmptyChecker<T> | LoadingChecker<T>;
 
+// https://stackoverflow.com/questions/48230773/how-to-create-a-partial-like-that-requires-a-single-property-to-be-set
+
+type AtLeastOne<T, U = {[K in keyof T]: Pick<T, K> }> = Partial<T> & U[keyof U];
+
+type ResourceCallbacks<T> = {
+  success: (data: T) => void;
+  failure: (err: any) => void;
+  empty: () => void;
+  loading: () => void;
+}
+
+type PartialResourceCallbacks<T> = AtLeastOne<ResourceCallbacks<T>>
+
 /**
  * Main Checker interface
  */
@@ -169,7 +181,7 @@ export function toResource<T>(data: T): Resource<T> {
  * @param error any
  */
 export function toFailure<T>(error: any): Resource<T> {
-  return new Resource(null, error);
+  return new Resource<T>(null, error);
 }
 
 export const FAILURE = new Resource<any>(null, true);
@@ -188,7 +200,7 @@ export function resourceRequestObservable<T>(request: Observable<T>): Observable
     request// .pipe(catchError)
       .pipe(
         map(toResource),
-        catchError(error => of(toFailure<T>(error)))
+        catchError((error: any) => of(toFailure<T>(error)))
       )
   ).pipe(concatAll());
 }

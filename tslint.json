@@ -1,0 +1,41 @@
+{
+  "defaultSeverity": "error",
+  "extends": ["tslint:recommended"],
+  "jsRules": {},
+  "rules": {
+      "import-blacklist": [
+          true,
+          "rxjs/Rx"
+      ],
+      "max-line-length": [
+          true,
+          140
+      ],
+      "member-ordering": [
+          true,
+          {
+              "order": [
+                  "static-field",
+                  "instance-field",
+                  "static-method",
+                  "instance-method"
+              ]
+          }
+      ],
+      "no-console": [
+          true,
+          "debug",
+          "info",
+          "time",
+          "timeEnd",
+          "trace"
+      ],
+      "no-non-null-assertion": true,
+
+      "quotemark": [
+          true,
+          "single"
+      ]
+  },
+  "rulesDirectory": []
+}
