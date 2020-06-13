@@ -2,11 +2,13 @@
   "name": "state-aware-resource",
   "version": "0.3.0",
   "description": "Resource wrapper that stores the state during an asynchronous wait.",
-  "main": "dist/bundle.js",
+  "main": "dist/resource.js",
   "types": "dist/resource.d.ts",
   "scripts": {
-    "build": "npx webpack --config=webpack.config.js",
-    "prepack": "npm run build",
+    "build:webpack": "npx webpack --config=webpack.prod.config.js",
+    "build:tsc": "tsc --p tsconfig.prod.json",
+    "clean": "rimraf dist",
+    "prepack": "npm run clean && npm run build:tsc",
     "test": "jasmine-ts --config=jasmine.json",
     "test:watch": "nodemon --ext ts --exec 'jasmine-ts  --config=jasmine.json'"
   },
@@ -18,7 +20,7 @@
     "dist"
   ],
   "keywords": [
-    "educational"
+    "state-management"
   ],
   "author": "FedeBossman",
   "license": "MIT",
@@ -34,6 +36,7 @@
     "jasmine-spec-reporter": "^5.0.2",
     "jasmine-ts": "^0.3.0",
     "nodemon": "^2.0.4",
+    "rimraf": "^3.0.2",
     "ts-loader": "^7.0.5",
     "ts-node": "^8.10.2",
     "tslint": "^6.1.2",
