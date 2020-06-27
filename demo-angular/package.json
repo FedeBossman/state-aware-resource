@@ -19,8 +19,9 @@
     "@angular/platform-browser": "~8.0.1",
     "@angular/platform-browser-dynamic": "~8.0.1",
     "@angular/router": "~8.0.1",
+    "angular-in-memory-web-api": "^0.11.0",
     "rxjs": "~6.4.0",
-    "state-aware-resource": "^0.3.0",
+    "state-aware-resource": "^0.3.2",
     "tslib": "^1.9.0",
     "zone.js": "~0.9.1"
   },
