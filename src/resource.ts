@@ -38,15 +38,14 @@ export class Resource<T> {
     this.data = data;
     this.error = error;
     this.isLoading = loading;
-    if (this.isLoading && (this.error || this.data)) {
-      throw new Error('A loading resource cannot have data or errors.');
-    }
   }
 
   /**
    * Dynamically sets triggers for possible resource outcomes based on a PartialChecker structure
    * @param options - PartialChecker given for the current resource
    */
+
+
   on(options: PartialResourceCallbacks<T>): void {
     if (options.loading && this.isLoading) {
       options.loading();
@@ -60,6 +59,9 @@ export class Resource<T> {
     if (options.empty && this.isEmpty) {
       options.empty();
     }
+    if (options.always && !this.isLoading) {
+      options.always();
+    }
   }
 }
 
@@ -72,6 +74,7 @@ type ResourceCallbacks<T> = {
   failure: (err: any) => void;
   empty: () => void;
   loading: () => void;
+  always: () => void;
 }
 
 /**
@@ -119,7 +122,7 @@ export const LOADING = new Resource<any>(null, null, true);
 export function resourceRequestObservable<T>(request: Observable<T>): Observable<Resource<T>> {
   return of(
     of(LOADING),
-    request// .pipe(catchError)
+    request
       .pipe(
         map(toResource),
         catchError((error: any) => of(toFailure<T>(error)))

@@ -30,15 +30,19 @@ describe('Resource<T>', () => {
         notCalled: () => {
         },
         success: () => {
+        },
+        always: () => {
         }
       };
       const spy = spyOn(testObject, 'notCalled');
       const successSpy = spyOn(testObject, 'success');
+      const alwaysSpy = spyOn(testObject, 'always');
 
       const res = new Resource('test');
 
       res.on({
         success: testObject.success,
+        always: testObject.always,
         failure: testObject.notCalled,
         empty: testObject.notCalled,
         loading: testObject.notCalled,
@@ -46,6 +50,7 @@ describe('Resource<T>', () => {
 
       // @ts-ignore
       expect(successSpy).toHaveBeenCalledWith('test');
+      expect(alwaysSpy).toHaveBeenCalled();
       expect(spy).not.toHaveBeenCalled();
     });
   });
@@ -168,6 +173,7 @@ describe('Resource<T>', () => {
         failure: testObject.notCalled,
         success: testObject.notCalled,
         empty: testObject.notCalled,
+        always: testObject.notCalled,
         loading: testObject.loading,
       });
 

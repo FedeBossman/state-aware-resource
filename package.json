@@ -1,6 +1,6 @@
 {
   "name": "state-aware-resource",
-  "version": "0.3.0",
+  "version": "0.3.2",
   "description": "Resource wrapper that stores the state during an asynchronous wait.",
   "main": "dist/resource.js",
   "types": "dist/resource.d.ts",
@@ -40,12 +40,12 @@
     "ts-loader": "^7.0.5",
     "ts-node": "^8.10.2",
     "tslint": "^6.1.2",
-    "typescript": "^3.9.5",
+    "typescript": "~3.4.3",
     "webpack": "^4.43.0",
     "webpack-cli": "^3.3.11",
     "webpack-dev-server": "^3.11.0"
   },
   "dependencies": {
-    "rxjs": "^6.5.5"
+    "rxjs": "~6.4.0"
   }
 }
