@@ -1,4 +1,3 @@
-<!--The content below is only a placeholder and can be replaced.-->
 <div style="text-align:center">
   <h1>
     To Do
@@ -13,10 +12,13 @@
 <span *ngIf="loading">loading...</span>
 
 <hr/>
-<label>
-  Add to do:
-  <input type="text">
+<form [formGroup]="todoForm">
+  <label>
+    Add to do:
+    <input type="text" [formControlName]="'name'">
+  </label>
+
   <button (click)="onAddToDo()"> Add </button>
   <button (click)="clearToDoList()"> Clear </button>
-</label>
+</form>
 

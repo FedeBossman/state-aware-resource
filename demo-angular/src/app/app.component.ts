@@ -1,8 +1,8 @@
 import {Component, OnInit} from '@angular/core';
-import {onResource, Resource} from "state-aware-resource";
+import {onResource} from "state-aware-resource";
 import {TodoService} from "./services/todo.service";
 import {ToDo} from "./todo";
-import {mergeMap} from "rxjs/operators";
+import {FormControl, FormGroup} from "@angular/forms";
 
 @Component({
   selector: 'app-root',
@@ -10,12 +10,11 @@ import {mergeMap} from "rxjs/operators";
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent implements OnInit {
-  title = 'demo-angular';
-
   todos: ToDo[];
   loading: boolean;
   showEmptyView: boolean;
   error: any;
+  todoForm = new FormGroup({name: new FormControl('')});
 
   constructor(private todoService: TodoService) {
   }
@@ -46,7 +45,7 @@ export class AppComponent implements OnInit {
   }
 
   onAddToDo() {
-    this.todoService.addToDo({name: 'hola'})
+    this.todoService.addToDo({name: this.todoForm.controls.name.value})
       .subscribe(onResource<ToDo>({
         loading: () => {
           this.loading = true;
