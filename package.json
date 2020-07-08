@@ -1,6 +1,6 @@
 {
   "name": "state-aware-resource",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "description": "Resource wrapper that stores the state during an asynchronous wait.",
   "main": "dist/resource.js",
   "types": "dist/resource.d.ts",
@@ -20,7 +20,10 @@
     "dist"
   ],
   "keywords": [
-    "state-management"
+    "state-aware",
+    "state-management",
+    "rxjs",
+    "angular"
   ],
   "author": "FedeBossman",
   "license": "MIT",

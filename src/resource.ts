@@ -6,11 +6,11 @@ import {catchError, concatAll, map} from 'rxjs/operators';
  * Initial loading state and possible success, failure and empty outcomes.
  */
 export class Resource<T> {
-  get isFailure(): boolean {
+  private get isFailure(): boolean {
     return !this.isLoading && this.error !== null;
   }
 
-  get isEmpty(): boolean {
+  private get isEmpty(): boolean {
     if (this.isLoading || this.isFailure) {
       return false;
     }
@@ -26,11 +26,11 @@ export class Resource<T> {
     return false;
   }
 
-  get isSuccess(): boolean {
+  private get isSuccess(): boolean {
     return !this.isLoading && !this.isFailure && !this.isEmpty;
   }
 
-  readonly isLoading: boolean;
+  private readonly isLoading: boolean;
   readonly data: T;
   readonly error: any;
 
