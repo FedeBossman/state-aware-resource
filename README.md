@@ -1,6 +1,6 @@
 # State Aware Resource
 
-> Stop checking in on the state of your http requests!
+> Lightweight reactive resource solution 🦾
 
 Oftentimes, the applications we develop have one or more asynchronous events occurring while users interact. 
 
@@ -27,22 +27,22 @@ getToDos(): Observable<Resource<ToDo[]>> {
 When consuming the function, onResource allows for a declarative interface. 
 ```ts
 this.todoService.getToDos()
-   .subscribe(onResource<ToDo[]>({
-     loading: () => {
-       this.loadingSubject.next(true);
-     },
-     always: () => {
-       this.loadingSubject.next(false);
-     },
-     empty: () => {
-       this.showEmptyView = true;
-     },
-     failure: (error) => {
-       this.error = error;
-     },
-     success: (data) => {
-       this.todos = data;
-     }
+  .subscribe(onResource<ToDo[]>({
+    loading: () => {
+      this.loading = true;
+    },
+    always: () => {
+      this.loading = false;
+    },
+    empty: () => {
+      this.showEmptyView = true;
+    },
+    failure: (error) => {
+      this.error = error;
+    },
+    success: (data) => {
+      this.todos = data;
+    }
    }));
 ```
 
@@ -59,3 +59,8 @@ With [yarn](https://yarnpkg.com/en/):
 ```shell
 yarn add state-aware-resource
 ```
+
+## Changelog
+- 0.3.5: Public loading, empty, success and failure accessors for filter pipes.
+- 0.3.4: ES5 support for IE11 compatibility.
+
