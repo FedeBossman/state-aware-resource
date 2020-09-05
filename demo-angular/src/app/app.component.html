@@ -9,7 +9,24 @@
     <h3>{{todo.name}} {{todo.id}}</h3>
   </li>
 </ul>
-<span *ngIf="loading">loading...</span>
+<br>
+<span *appResource="resource; data as r; failure failureBlock; empty emptyBlock; loading loadingBlock">
+  Success!!!! {{r | json}}
+</span>
+<div [swResource]="resource">
+  <span>This is always here</span>
+  <span *appResourceSuccess="'loading'"> LOADING </span>
+  <span *appResourceSuccess="'failure'; let error"> FAILURE {{error | json}} </span>
+  <span *appResourceSuccess="'empty'"> EMPTY </span>
+  <span *appResourceSuccess="'success'; let data"> SUCCESS {{data | json}} </span>
+  This is always here as well
+  <span *appResourceSuccess="let todo=data"> Success: You can repeat the directive {{todo | json}} </span>
+</div>
+
+
+<ng-template #loadingBlock>Loading!!!!</ng-template>
+<ng-template #emptyBlock>Empty!!!!</ng-template>
+<ng-template #failureBlock let-error="error">Failure!!!!</ng-template>
 
 <hr/>
 <form [formGroup]="todoForm">

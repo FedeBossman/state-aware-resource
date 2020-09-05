@@ -1,8 +1,9 @@
 import {Component, OnInit} from '@angular/core';
-import {onResource} from "state-aware-resource";
+import {onResource, Resource} from "state-aware-resource";
 import {TodoService} from "./services/todo.service";
 import {ToDo} from "./todo";
 import {FormControl, FormGroup} from "@angular/forms";
+import {tap} from "rxjs/operators";
 
 @Component({
   selector: 'app-root',
@@ -15,6 +16,7 @@ export class AppComponent implements OnInit {
   showEmptyView: boolean;
   error: any;
   todoForm = new FormGroup({name: new FormControl('')});
+  resource: Resource<ToDo>;
 
   constructor(private todoService: TodoService) {
   }
@@ -46,6 +48,9 @@ export class AppComponent implements OnInit {
 
   onAddToDo() {
     this.todoService.addToDo({name: this.todoForm.controls.name.value})
+      .pipe(tap(resource => {
+        this.resource = resource;
+      }))
       .subscribe(onResource<ToDo>({
         loading: () => {
           this.loading = true;
