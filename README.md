@@ -61,6 +61,7 @@ yarn add state-aware-resource
 ```
 
 ## Changelog
+- 0.4.0: Move rxjs to peer dependencies and version ^6.4.0 for compatibility
 - 0.3.5: Public loading, empty, success and failure accessors for filter pipes.
 - 0.3.4: ES5 support for IE11 compatibility.
 
